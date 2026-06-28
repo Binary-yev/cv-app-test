@@ -26,14 +26,14 @@ On server boot, the application initializes and sets up the fastai learner by ve
 
 ```mermaid
 graph TD
-    A[Start Starlette Server] --> B[Run setup_learner]
-    B --> C{Model File (.pth) Exists?}
-    C -- No --> D[Download model weights from Dropbox]
-    C -- Yes --> E[Skip Download]
-    D --> F[Load model with fastai learn.load]
+    A["Start Starlette Server"] --> B["Run setup_learner"]
+    B --> C{"Model File (.pth) Exists?"}
+    C -- No --> D["Download model weights from Dropbox"]
+    C -- Yes --> E["Skip Download"]
+    D --> F["Load model with fastai learn.load"]
     E --> F
-    F --> G[Initialize CNN Learner & ResNet50]
-    G --> H[Server Ready on port 8080]
+    F --> G["Initialize CNN Learner & ResNet50"]
+    G --> H["Server Ready on port 8080"]
 ```
 
 ### 2. Prediction Request Flow
@@ -41,12 +41,12 @@ When a user uploads an image via the web UI, the Starlette server processes the 
 
 ```mermaid
 graph TD
-    A[User uploads image at /] --> B[POST /analyze request]
-    B --> C[Extract file bytes from form data]
-    C --> D[Convert bytes using BytesIO & open_image]
-    D --> E[Run learn.predict on image]
-    E --> F[Determine Class: HDR vs. NON_HDR]
-    F --> G[Return JSONResponse prediction result]
+    A["User uploads image at /"] --> B["POST /analyze request"]
+    B --> C["Extract file bytes from form data"]
+    C --> D["Convert bytes using BytesIO & open_image"]
+    D --> E["Run learn.predict on image"]
+    E --> F["Determine Class: HDR vs. NON_HDR"]
+    F --> G["Return JSONResponse prediction result"]
 ```
 
 ---
