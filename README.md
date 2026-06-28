@@ -2,13 +2,54 @@
 
 A Computer Vision web application built with fastai and Starlette that classifies images as HDR vs. NON-HDR. It downloads a pre-trained ResNet50 model automatically on startup and serves predictions via a web interface.
 
-## Features
+## Project Schema & Structure
 
-- **HDR Image Classification**: Automatically classifies uploaded images into `HDR` or `NON-HDR` categories.
-- **Fast.ai & PyTorch Backend**: Leverages fast.ai and PyTorch for model initialization and predictions.
-- **Asynchronous Starlette API**: Built on Starlette for highly efficient, asynchronous image uploads and server-side processing.
-- **App Engine Flex Configuration**: Includes `app.yaml` for direct deployment to Google App Engine (GAE) Flexible environment.
-- **Dockerized**: Bundled with a Dockerfile for local running or containerized deployments.
+```
+cv-app-test/
+├── app.yaml            # Google App Engine Flexible configuration
+├── Dockerfile          # Container build configuration
+├── requirements.txt    # Project Python dependencies
+└── app/
+    ├── server.py       # Main server routing & prediction logic
+    ├── models/         # Destination directory for downloaded model file
+    ├── static/         # Public static assets (CSS, JS, images)
+    └── view/
+        └── index.html  # Web interface UI
+```
+
+---
+
+## Application Flows
+
+### 1. Startup Flow
+On server boot, the application initializes and sets up the fastai learner by verifying and downloading the model weights.
+
+```mermaid
+graph TD
+    A[Start Starlette Server] --> B[Run setup_learner]
+    B --> C{Model File (.pth) Exists?}
+    C -- No --> D[Download model weights from Dropbox]
+    C -- Yes --> E[Skip Download]
+    D --> F[Load model with fastai learn.load]
+    E --> F
+    F --> G[Initialize CNN Learner & ResNet50]
+    G --> H[Server Ready on port 8080]
+```
+
+### 2. Prediction Request Flow
+When a user uploads an image via the web UI, the Starlette server processes the request asynchronously.
+
+```mermaid
+graph TD
+    A[User uploads image at /] --> B[POST /analyze request]
+    B --> C[Extract file bytes from form data]
+    C --> D[Convert bytes using BytesIO & open_image]
+    D --> E[Run learn.predict on image]
+    E --> F[Determine Class: HDR vs. NON_HDR]
+    F --> G[Return JSONResponse prediction result]
+```
+
+---
 
 ## Setup & Running
 
@@ -38,7 +79,7 @@ A Computer Vision web application built with fastai and Starlette that classifie
 
 ## Deploying to Google App Engine
 
-Deploy directly via the Google Cloud SDK:
+Deploy directly to Google App Engine Flexible environment using the Google Cloud SDK:
 ```bash
 gcloud app deploy
 ```
